@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+// const connectDB = require('./connectDB');
 
 // function enterDepartment() {
 //     return     {
@@ -83,6 +84,7 @@ const questions = [
 
 function start() {
     const prompts = inquirer.prompt(questions);
+    // prompts.then((data) => connectDB(data));
 }
 
 start()

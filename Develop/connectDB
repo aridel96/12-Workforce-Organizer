@@ -11,3 +11,20 @@ const database = mysql.createConnection(
     console.log('Successfully connected to database')
 );
 
+function connectDB(userInput) {
+    const { options, departmentName, roleName, roleSalary, roleDepartment, firstName, lastName, employeeRole, manager } = userInput;
+
+    console.log(options);
+    console.log(departmentName);
+    console.log(roleName);
+    console.log(roleSalary);
+    console.log(roleDepartment);
+    console.log(firstName);
+    console.log(lastName);
+    console.log(employeeRole);
+    console.log(manager);
+
+}
+
+
+module.exports = connectDB;             // Exports the connectDB function
