@@ -1,13 +1,5 @@
 const inquirer = require('inquirer');
-// const connectDB = require('./connectDB');
-
-// function enterDepartment() {
-//     return     {
-//         type: 'input',
-//         name: 'departmentName',
-//         message: 'Enter the name for this department:',
-//     }
-// }
+const connectDB = require('./connectDB');
 
 const questions = [
     {
@@ -73,18 +65,37 @@ const questions = [
         }
     },
     {
-        type: 'input',
+        type: 'list',
         name: 'manager',
-        message: "Enter this employee's manager:",          // Change to list
+        message: "Who is this employee's manager:",
+        choices: ['John Doe', 'Ashley Rodriguez', 'Kunal Singh', 'Sarah Lourd'],
         when: (answers) => {
-            return answers.employeeRole && answers.employeeRole.trim() !== '';
+            return answers.employeeRole === 'Sales Lead' || answers.employeeRole === 'Sales Person' || answers.employeeRole === 'Lead Engineer' || answers.employeeRole === 'Software Engineer' || answers.employeeRole === 'Account Manager' || answers.employeeRole === 'Accountant' || answers.employeeRole === 'Legal Team Lead' || answers.employeeRole === 'Lawyer'
+        }
+    },
+    {
+        type: 'list',
+        name: 'employee',
+        message: "Which employee's role do you want to update?",
+        choices: ['John Doe', 'Mike Chan', 'Ashley Rodriguez', 'Kevin Tupik', 'Kunal Singh', 'Malia Brown', 'Sarah Lourd', 'Tom Allen'],
+        when: (answers) => {
+            return answers.options === 'update an Employee Role'
+        }
+    },
+    {
+        type: 'list',
+        name: 'newRole',
+        message: 'Which role do you want to assign the selected employee?',
+        choices: ['Sales Lead', 'Sales Person', 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer'],
+        when: (answers) => {
+            return answers.employee === 'John Doe' || answers.employee === 'Mike Chan' || answers.employee === 'Ashley Rodriguez' || answers.employee === 'Kevin Tupik' || answers.employee === 'Kunal Singh' || answers.employee === 'Malia Brown' || answers.employee === 'Sarah Lourd' || answers.employee === 'Tom Allen'
         }
     }
 ]
 
 function start() {
     const prompts = inquirer.prompt(questions);
-    // prompts.then((data) => connectDB(data));
+    prompts.then((data) => connectDB(data));
 }
 
 start()

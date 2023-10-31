@@ -1,11 +1,10 @@
-DROP DATABASE IF EXIST emp_tracker_db;          -- Checks to see if the database exist already. If it does it drops the database meaning 
-                                                -- it deletes the database, it's tables and the data inside.
+DROP DATABASE IF EXIST emp_tracker_db;          
 
-CREATE DATABASE emp_tracker_db;                 -- Creates the database
+CREATE DATABASE emp_tracker_db;                 
 
-USE emp_tracker_db;                             -- Allows us to use the databasr and interact with it
+USE emp_tracker_db;                             
 
-CREATE TABLE department (                       -- Creates the tables 
+CREATE TABLE department (                       
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(30) NOT NULL
 );
