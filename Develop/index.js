@@ -67,10 +67,19 @@ const questions = [
     {
         type: 'list',
         name: 'manager',
+        message: 'Does this employee have a manager?',
+        choices: ['Yes', 'No'],
+        when: (answers) => {
+            return answers.employeeRole === 'Sales Lead' || answers.employeeRole === 'Sales Person' || answers.employeeRole === 'Lead Engineer' || answers.employeeRole === 'Software Engineer' || answers.employeeRole === 'Account Manager' || answers.employeeRole === 'Accountant' || answers.employeeRole === 'Legal Team Lead' || answers.employeeRole === 'Lawyer'
+        }
+    },
+    {
+        type: 'list',
+        name: 'managerName',
         message: "Who is this employee's manager:",
         choices: ['John Doe', 'Ashley Rodriguez', 'Kunal Singh', 'Sarah Lourd'],
         when: (answers) => {
-            return answers.employeeRole === 'Sales Lead' || answers.employeeRole === 'Sales Person' || answers.employeeRole === 'Lead Engineer' || answers.employeeRole === 'Software Engineer' || answers.employeeRole === 'Account Manager' || answers.employeeRole === 'Accountant' || answers.employeeRole === 'Legal Team Lead' || answers.employeeRole === 'Lawyer'
+            return answers.manager === 'Yes'
         }
     },
     {

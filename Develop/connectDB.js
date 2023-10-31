@@ -12,9 +12,39 @@ const database = mysql.createConnection(
 );
 
 function connectDB(userInput) {
-    const { options, departmentName, roleName, roleSalary, roleDepartment, firstName, lastName, employeeRole, manager, employee, newRole } = userInput;
+    const { options, departmentName, roleName, roleSalary, roleDepartment, firstName, lastName, employeeRole, manager, managerName, employee, newRole } = userInput;
 
     switch (options) {
+        case 'view all Departments':
+            database.query('SELECT * FROM department', (err, response) => {
+                if (err){
+                    console.log(err);
+                }
+                console.table(response)
+            })
+
+            break
+
+        case 'view all Roles':
+            database.query('SELECT role.id, role.title AS role, role.salary, department.name FROM role JOIN department ON role.department_id = department.id', (err, response) => {
+                if (err){
+                    console.log(err);
+                }
+                console.table(response)
+            })
+            
+            break
+
+        case 'view all Employees':
+            database.query('SELECT employee.id, employee.first_name AS first, employee.last_name AS last, role.title AS role FROM employee JOIN role ON employee.role_id = role.id', (err, response) => {
+                if (err){
+                    console.log(err);
+                }
+                console.table(response)
+            })
+
+            break
+
         case 'add a Department':
             if (departmentName){
                 database.query('INSERT INTO department (name) VALUES (?)', departmentName, (err, results) => {
@@ -25,6 +55,8 @@ function connectDB(userInput) {
                 })
             }
 
+            break
+
         case 'add a Role':
             if (roleName && roleSalary && roleDepartment){
                 database.query('SELECT id FROM department WHERE name = ?', roleDepartment, (err, results) => {
@@ -34,7 +66,10 @@ function connectDB(userInput) {
 
                     dptId = results[0].id
 
-                    database.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', roleName, roleSalary, dptId, (err, results) => {
+                    let myQuery1 = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)'
+                    let params1 = [roleName, roleSalary, dptId]
+
+                    database.query(myQuery1, params1, (err, results) => {
                         if (err){
                             console.log('The error: ' + err);
                         }
@@ -43,60 +78,98 @@ function connectDB(userInput) {
                 })
             }
 
-        case 'add a Employee':
+            break
+
+        case 'add an Employee':
             if (firstName && lastName && employeeRole){
                 database.query('SELECT id FROM role WHERE title = ?', employeeRole, (err, results) => {
                     if (err){
                         console.log(err)
                     }
-                    console.log(results);
+                    empRole = results[0].id
+                    console.log(empRole);               // Console logs the id for the role
 
-                    if (manager){
-                        let name = manager.split(' ');
-                        let first = name[0];
-                        let last = name[1];
-
-                        database.query('SELECT id FROM employee WHERE first_name = ? AND last = ?', first, last, (err, response) => {
-                            if (err){
-                                console.log
-                            }
-
-                            database.query('INSERT INTO department (firstName, lastName, role_id, manager_id) VALUES (?)', firstName, lastName, results, response, (err, data) => {
+                    if (manager === 'Yes') {
+                        if (managerName){
+                            let name = managerName.split(' ');
+                            let first = name[0];
+                            let last = name[1];
+                            
+                            let nameQuery = 'SELECT id FROM employee WHERE first_name = ? AND last_name = ?'
+                            let nameParam = [first, last]
+                            database.query(nameQuery, nameParam, (err, response) => {
                                 if (err){
-                                    console.log(err)
+                                    console.log("my error: " + err);
                                 }
-                                return console.log(data)
-                            })  
-                        })
-                    }
-
-                    let manager = NULL;
-
-                    database.query('INSERT INTO department (firstName, lastName, role_id, manager_id) VALUES (?)', firstName, lastName, results, manager, (err, results) => {
-                        if (err){
-                            console.log(err)
+                                mgmtId = response[0].id
+                                console.log(mgmtId)                       // Console logs the id for the manager which is another employee in the database
+    
+                                let myQuery2 = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)'
+                                let param2 = [firstName, lastName, empRole, mgmtId]
+    
+                                database.query(myQuery2, param2, (err, data) => {
+                                    if (err){
+                                        console.log(err)
+                                    }
+                                    return console.log(data)
+                                })  
+                            })
                         }
-                        return console.log(results)
-                    })                
+                    }
+                    else {
+                        let myQuery2 = 'INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)'
+                        let param2 = [firstName, lastName, empRole]
+    
+                        database.query(myQuery2, param2, (err, results) => {
+                            if (err){
+                                console.log(err)
+                            }
+                            return console.log(results)
+                        })
+                    }                
                 })
             }
 
+            break
+
         case 'update an Employee Role':
             if (employee && newRole){
+                let empName = employee.split(" ");
+                let empFirst = empName[0];
+                let empLast = empName[1];
 
-                database.query('SELECT id FROM employee WHERE first_name = ? AND last = ?', first, last, (err, response) => {
+                let idQuery = 'SELECT id FROM employee WHERE first_name = ? AND last_name = ?'
+                let idParam = [empFirst, empLast]
+
+                database.query(idQuery, idParam, (err, response) => {
                     if (err){
-                        console.log
+                        console.log(err)
                     }
 
-                    database.query('INSERT INTO department (firstName, lastName, role_id, manager_id) VALUES (?)', firstName, lastName, results, response, (err, data) => {
+                    let empId = response[0].id
+                    console.log(empId)
+
+                    database.query('SELECT id FROM role WHERE title = ?', newRole, (err, results) => {
                         if (err){
-                            console.log(err)
+                            console.log(err);
                         }
-                        return console.log(data)
-                    })  
+
+                        roleId = results[0].id
+                        console.log(roleId)
+
+                        let myQuery3 = 'UPDATE employee SET role_id = ? WHERE id = ?'
+                        let param3 = [roleId, empId]
+
+                        database.query(myQuery3, param3, (err, data) => {
+                            if (err){
+                                console.log(err)
+                            }
+                            return console.log(data)
+                        }) 
+                    })
                 })
-            }            
+            }
+            break           
     }
 }
 
