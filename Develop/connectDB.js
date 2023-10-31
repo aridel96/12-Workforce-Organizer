@@ -4,7 +4,7 @@ const database = mysql.createConnection(
     {
     host: 'localhost',
     user: 'root',
-    password: 'OhMyStars369*',
+    password: ' ',                      //Removed password for safety reasons
     database: 'emp_tracker_db'
     },
 
@@ -36,7 +36,7 @@ function connectDB(userInput) {
             break
 
         case 'view all Employees':
-            database.query('SELECT employee.id, employee.first_name AS first, employee.last_name AS last, role.title AS role, department.name AS department, (SELECT first_name, last_name FROM employee WHERE manager_id = id (CONCAT(employee.first_name, \' \', employee.last_name))) AS manager FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id', (err, response) => {
+            database.query('SELECT employee.id, employee.first_name AS first, employee.last_name AS last, role.title AS role, department.name AS department, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS manager ON manager.id = employee.manager_id', (err, response) => {
                 if (err){
                     console.log(err);
                 }
